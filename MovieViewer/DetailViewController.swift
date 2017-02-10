@@ -26,19 +26,39 @@ class DetailViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        let saveButton = UIBarButtonItem(title: "Save", style: .plain, target: self,action: nil)
+        let segmentedControl = UISegmentedControl(items: ["Like", "Dislike"])
+        segmentedControl.sizeToFit()
+       // let segmentedButton = UIBarButtonItem(customView: segmentedControl)
+        navigationItem.rightBarButtonItems = [saveButton]
+        self.navigationItem.title = "Details"
+      //  self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "Other Movies", style: .plain, target: nil, action: nil)
+        
         scrollView.contentSize = CGSize(width: scrollView.frame.size.width, height: infoView.frame.origin.y + infoView.frame.size.height)
         
         
         let title = movie["title"] as? String
         titleLabel.text = title
         
-        let baseUrl = "https://image.tmdb.org/t/p/w500"
-        
+      // let baseUrl = "https://image.tmdb.org/t/p/w500"
+        let lowUrl = "https://image.tmdb.org/t/p/w45"
+        let highUrl = "https://image.tmdb.org/t/p/original"
     
-        if let posterPath = movie["poster_path"] as? String{
-            let imageUrl = NSURL(string: baseUrl + posterPath)
-            posterImageView.setImageWith(imageUrl as! URL)
-        }
+        UIView.animate(withDuration: 0.3, animations: {
+            self.posterImageView.alpha = 0.0
+            if let posterPath = self.movie["poster_path"] as? String{
+                let imageUrl = NSURL(string: lowUrl + posterPath)
+                self.posterImageView.setImageWith(imageUrl as! URL)
+            }
+
+        }, completion:{ _ in
+            self.posterImageView.alpha = 1.0
+            if let posterPath = self.movie["poster_path"] as? String{
+                let imageUrl = NSURL(string: highUrl + posterPath)
+                self.posterImageView.setImageWith(imageUrl as! URL)
+            }
+            
+        })
         
         let overview = movie["overview"] as! String
         overviewLabel.text = overview

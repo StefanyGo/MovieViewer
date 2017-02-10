@@ -17,6 +17,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     @IBOutlet weak var searchBar: UISearchBar!
     var movies: [NSDictionary]?
     var tempMovies: [NSDictionary]?
+    
    // let data = ["Arrival", "La La Land", "Miss Peregrine's Home for Peculiar Children", "xXx: Return of Xander Cage", "Assassin's Creed", "Split", "Passengers", "Rings", "Underworld: Blood Wars", "Hacksaw Ridge", "Moana", "Hidden Figures", "A Monster Calls", "The Edge of Seventeen", "Sing", "Lion", "iBoy", "Nocturnal Animals", "Allied", "Boyka: Undisputed IV"]
     
     var filteredData: [NSDictionary]?
@@ -29,6 +30,24 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         tableView.dataSource = self
         tableView.delegate = self
         searchBar.delegate = self
+        
+        if let navigationBar = navigationController?.navigationBar {
+            //navigationItem.titleView = UIImageView(image: UIImage(named: "film-logo.jpg"))
+           // navigationBar.setBackgroundImage(UIImage(named: "film-logo.png"), for: .default)
+            navigationBar.tintColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.8)
+            
+            let shadow = NSShadow()
+            shadow.shadowColor = UIColor.darkGray.withAlphaComponent(0.3)
+            shadow.shadowOffset = CGSize(width: 2, height: 2)
+            shadow.shadowBlurRadius = 4;
+            navigationBar.titleTextAttributes = [
+                NSFontAttributeName : UIFont.boldSystemFont(ofSize: 22),
+                NSForegroundColorAttributeName : UIColor(red: 0, green: 0, blue: 0, alpha: 0.8),
+                NSShadowAttributeName : shadow
+            ]
+        }
+        
+    
 
         // Do any additional setup after loading the view.
       //  endpoint = "now_playing" as String!
@@ -47,6 +66,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
                     
                     self.movies = dataDictionary["results"] as? [NSDictionary]
                     self.filteredData = self.movies
+                    self.tempMovies = self.movies
                     self.tableView.reloadData()
                 }
             }
@@ -206,6 +226,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         
         cell.titleLabel.text = title
         cell.overviewLabel.text = overview
+        cell.selectionStyle = .none
         
       //  cell.textLabel?.text = filteredData[indexPath.row]
         
@@ -268,8 +289,13 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         let detailViewController = segue.destination as! DetailViewController
         detailViewController.movie = movie
         
-        
-        
+        searchBar.showsCancelButton = false
+        searchBar.text = ""
+        searchBar.resignFirstResponder()
+        movies = tempMovies
+        tableView.reloadData()
+
+
         
         
         // Get the new view controller using segue.destinationViewController.
@@ -282,7 +308,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         // Use the filter method to iterate over all items in the data array
         // For each item, return true if the item should be included and false if the
         // item should NOT be included
-        movies = tempMovies
+      //  movies = tempMovies
         filteredData = searchText.isEmpty ? tempMovies : movies!.filter({(data: NSDictionary) -> Bool in
             // If dataItem matches the searchText, return true to include it
             let title = data["title"] as! String
